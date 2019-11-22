@@ -68,28 +68,153 @@ public class cracker {
 			{
 				temp[iter] = d[iter];
 			}
+			temp[from] = 0;
+			temp[over] = 0;
+			temp[to] = 0;
+			return(temp);
 		}
-		return(temp);
+		return(null);
+	}
+
+	public static int[][] solve(int[] kd)
+	{
+		int k = kd[0];
+		int d = kd[1];
+		int[][] nextSoln = {{}, {}};
+
+		if(k < 2)
+		{
+			nextSoln[1] = kd;
+		}
+		else
+		{
+			for(int iter = 0; iter < step.length; iter++)
+			{
+				int[] kc = move(kd, step[iter][0], step[iter][1], step[iter][2]);
+				if(kc != null)
+				{
+					for(int subIter = 0; subIter < solve(kc).length; subIter++)
+					{
+						int[] ms = solve(kc)[0];
+						int[] newkd = solve(kc)[1];
+						nextSoln[0] = ms;
+						nextSoln[1] = newkd;
+						return(nextSoln);
+					}
+				}
+			}
+		}
+
+		return(nextSoln);
 	}
 
 	/* set initial position with empty at i */
-	public static int[] puzzle(int i)
+	public static int[][] puzzle(int i)
 	{
 		int[] kd = init(i);
 
-		return(kd);
+		int[][] tempSoln = solve(init(i+1));
+		int[] newkd = tempSoln[0];
+		int[] ms = tempSoln[1];
+		int[] mlist = {};
+
+		for(int iter = 0; iter < ms.length; iter++)
+		{
+			int m = ms[iter];
+
+			int tempMList[] = new int[mlist.length + 1];
+
+			for(int subIter = 0; subIter < mlist.length; subIter++)
+			{
+				tempMList[subIter] = mlist[subIter];
+			}
+
+			tempMList[tempMList.length] = m;
+
+			mlist = tempMList;
+		}
+
+		int[][] nextSoln = {kd, mlist, newkd};
+		return(nextSoln);
 	}
 
+	public static void show(int[] kd)
+	{
+		int k = kd[0];
+		int d = kd[1];
 
+		int[][] lines = {{4,0,0}, {3,1,2}, {2,3,5}, {1,6,9}, {0,10,14}};
 
+		for(int iter = 0; iter < lines.length; iter++)
+		{
+			int[] l = lines[iter];
+			int t = l[0];
+			int a = l[1];
+			int b = l[2];
+			for(int tab = 0; tab < t; tab++)
+			{
+				System.out.print(" ");
+			}
+			for(int subIter = a; subIter <= b; subIter++)
+			{
+				char c = ' ';
+				if(kd[subIter] == 0)
+				{
+					c = '.';
+				}
+				else
+				{
+					c = 'x';
+				}
+				System.out.print(c);
+			}
+			System.out.print(' ');
+		}
+		System.out.print(' ');
+	}
 
+	public static void replay(int[] ms, int[] kd)
+	{
+		for(int iter = 0; iter < ms.length; iter++)
+		{
+			int m = ms[iter];
+
+			show(kd);
+			int k = kd[0];
+			int d = kd[1];
+			int f = ms[0];
+			int o = ms[1];
+			int t = ms[2];
+			int[] def = new int[3];
+			def[f] = 0;
+			def[o] = 0;
+			def[t] = 1;
+			kd[0] = k - 1;
+			kd[1] = d;
+		}
+		show(kd);
+	}
 
 	/* MAIN */
 	public static void main(String[] args)
 	{
 		//Turn nonstatic referenced objects into referencable static objects
 		cracker obj = new cracker();
-		//cracker.step();
+		
+		for(int i = 0; i <= 5; i++)
+		{
+			System.out.println("=== " + i + " ===");
+			System.out.println("    .    ");
+			System.out.println("   . .   ");
+			System.out.println("  . . .  ");
+			System.out.println(" . . . . ");
+			System.out.println(". . . . .");
+			System.out.println("");
+			//int[][] puz = cracker.puzzle(i);
+			//int[] kd1 = puz[0];
+			//int[] ms = puz[1];
+			//replay(ms, kd1);
+		}
 
 	}
 }
